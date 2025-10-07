@@ -64,7 +64,15 @@ jobs:
             type=raw,value=v${{ needs.build-test.outputs.PKG_VERSION }}
           labels: |
             org.opencontainers.image.title=tp-cicd-dockerhub
-
+      
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: image
+          image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
